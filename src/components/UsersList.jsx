@@ -1,6 +1,5 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import toast from "react-hot-toast";
 import UserCardShimmer from "./shimmer/UserCardShimmer";
 import UserCard from "./UserCard";
 import { useUsers } from "../hooks/useUsers";
@@ -19,8 +18,6 @@ const UsersList = () => {
     fetchUsers,
   } = useUsers();
 
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const handlePageChange = (newPage) => {
@@ -243,7 +240,7 @@ const UsersList = () => {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col space-y-4 sm:p-4 p-0">
+              <div className="flex flex-col gap-4 sm:p-4 p-0">
                 {filteredUsers.map((user) => (
                   <Suspense key={user.id} fallback={<UserCardShimmer />}>
                     <UserCard
@@ -262,22 +259,6 @@ const UsersList = () => {
           <div className="text-center text-slate-400 py-8">
             <p>No users found</p>
           </div>
-        )}
-
-        {selectedUser && (
-          <EditUserModal
-            isOpen={isEditModalOpen}
-            onClose={() => {
-              setIsEditModalOpen(false);
-              setSelectedUser(null);
-            }}
-            user={selectedUser}
-            onUpdate={() => {
-              setIsEditModalOpen(false);
-              setSelectedUser(null);
-              toast.success("User updated successfully");
-            }}
-          />
         )}
       </div>
     </div>

@@ -9,25 +9,12 @@ const UserCard = ({ user, onDelete, onUpdate }) => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowActions(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleViewProfile = () => {
     navigate(`/profile/${user.id}`);
   };
 
   const handleEdit = () => {
-    setTimeout(() => {
-      setShowEditModal(true);
-    }, 100);
+    setShowEditModal(true);
     setShowActions(false);
   };
 
@@ -192,7 +179,10 @@ const UserCard = ({ user, onDelete, onUpdate }) => {
             </button>
             <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => setShowActions(!showActions)}
+                onClick={(e) => {
+                  console.log("clicked");
+                  setShowActions(!showActions);
+                }}
                 className="p-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors duration-200"
               >
                 <svg
