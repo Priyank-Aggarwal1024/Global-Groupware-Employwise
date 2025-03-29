@@ -2,13 +2,11 @@ import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
-// Shimmer Components
 import LoginShimmer from "./components/shimmer/LoginShimmer";
 import SignupShimmer from "./components/shimmer/SignupShimmer";
 import UserCardShimmer from "./components/shimmer/UserCardShimmer";
 import ViewProfileShimmer from "./components/shimmer/ViewProfileShimmer";
 
-// Lazy Components
 const Login = React.lazy(() => import("./components/Login"));
 const Signup = React.lazy(() => import("./components/Signup"));
 const UsersList = React.lazy(() => import("./components/UsersList"));
@@ -29,7 +27,6 @@ const App = () => {
         }}
       />
       <Routes>
-        {/* Public Routes */}
         <Route
           path="/login"
           element={
@@ -48,7 +45,6 @@ const App = () => {
           }
         />
 
-        {/* Protected Routes */}
         <Route
           element={
             <Suspense fallback={<LoginShimmer />}>
@@ -82,7 +78,6 @@ const App = () => {
           />
         </Route>
 
-        {/* Redirect unknown routes to root */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

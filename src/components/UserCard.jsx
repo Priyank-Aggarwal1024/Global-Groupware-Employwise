@@ -25,7 +25,9 @@ const UserCard = ({ user, onDelete, onUpdate }) => {
   };
 
   const handleEdit = () => {
-    setShowEditModal(true);
+    setTimeout(() => {
+      setShowEditModal(true);
+    }, 100);
     setShowActions(false);
   };
 
@@ -102,7 +104,7 @@ const UserCard = ({ user, onDelete, onUpdate }) => {
               </button>
 
               {showActions && (
-                <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg py-1 z-10 border border-slate-700">
+                <div className="absolute  right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg py-1 z-10 border border-slate-700">
                   <button
                     onClick={handleEdit}
                     className="w-full px-4 py-2 text-left text-white hover:bg-slate-700 flex items-center space-x-2"

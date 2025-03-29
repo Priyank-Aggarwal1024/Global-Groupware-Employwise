@@ -1,5 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { FiUsers, FiLogOut } from "react-icons/fi";
+import ProtectedRoute from "../ProtectedRoute";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -49,7 +50,9 @@ const MainLayout = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Outlet />
+        <ProtectedRoute>
+          <Outlet />
+        </ProtectedRoute>
       </main>
     </div>
   );

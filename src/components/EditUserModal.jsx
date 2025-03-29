@@ -8,6 +8,7 @@ const EditUserModal = ({ user, isOpen, onClose, onUpdate }) => {
     email: "",
     role: "",
   });
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -18,8 +19,42 @@ const EditUserModal = ({ user, isOpen, onClose, onUpdate }) => {
         email: user.email || "",
         role: user.role || "Member",
       });
+      setErrors({});
     }
   }, [user]);
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {};
+
+    if (!formData.first_name.trim()) {
+      newErrors.first_name = "First name is required";
+      isValid = false;
+    }
+
+    if (!formData.last_name.trim()) {
+      newErrors.last_name = "Last name is required";
+      isValid = false;
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)
+    ) {
+      newErrors.email = "Please enter a valid email address";
+      isValid = false;
+    }
+
+    if (!formData.role) {
+      newErrors.role = "Role is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,17 +62,61 @@ const EditUserModal = ({ user, isOpen, onClose, onUpdate }) => {
       ...prev,
       [name]: value,
     }));
+
+    const newErrors = { ...errors };
+    switch (name) {
+      case "first_name":
+        if (!value.trim()) {
+          newErrors[name] = "First name is required";
+        } else {
+          delete newErrors[name];
+        }
+        break;
+      case "last_name":
+        if (!value.trim()) {
+          newErrors[name] = "Last name is required";
+        } else {
+          delete newErrors[name];
+        }
+        break;
+      case "email":
+        if (!value.trim()) {
+          newErrors[name] = "Email is required";
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+          newErrors[name] = "Please enter a valid email address";
+        } else {
+          delete newErrors[name];
+        }
+        break;
+      case "role":
+        if (!value) {
+          newErrors[name] = "Role is required";
+        } else {
+          delete newErrors[name];
+        }
+        break;
+      default:
+        break;
+    }
+    setErrors(newErrors);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fix all form errors before submitting");
+      return;
+    }
+
     try {
       setLoading(true);
       await onUpdate(user.id, formData);
       toast.success("User updated successfully");
       onClose();
     } catch (error) {
-      toast.error("Failed to update user");
+      console.error("Update error:", error);
+      toast.error(error.response?.data?.message || "Failed to update user");
     } finally {
       setLoading(false);
     }
@@ -86,9 +165,14 @@ const EditUserModal = ({ user, isOpen, onClose, onUpdate }) => {
               name="first_name"
               value={formData.first_name}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white"
+              className={`w-full px-4 py-2 bg-slate-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white ${
+                errors.first_name ? "border-red-500" : "border-slate-600"
+              }`}
               placeholder="Enter first name"
             />
+            {errors.first_name && (
+              <p className="mt-1 text-sm text-red-500">{errors.first_name}</p>
+            )}
           </div>
 
           <div>
@@ -100,9 +184,14 @@ const EditUserModal = ({ user, isOpen, onClose, onUpdate }) => {
               name="last_name"
               value={formData.last_name}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white"
+              className={`w-full px-4 py-2 bg-slate-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white ${
+                errors.last_name ? "border-red-500" : "border-slate-600"
+              }`}
               placeholder="Enter last name"
             />
+            {errors.last_name && (
+              <p className="mt-1 text-sm text-red-500">{errors.last_name}</p>
+            )}
           </div>
 
           <div>
@@ -114,9 +203,14 @@ const EditUserModal = ({ user, isOpen, onClose, onUpdate }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white"
+              className={`w-full px-4 py-2 bg-slate-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white ${
+                errors.email ? "border-red-500" : "border-slate-600"
+              }`}
               placeholder="Enter email"
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+            )}
           </div>
 
           <div>
@@ -127,12 +221,18 @@ const EditUserModal = ({ user, isOpen, onClose, onUpdate }) => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white"
+              className={`w-full px-4 py-2 bg-slate-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white ${
+                errors.role ? "border-red-500" : "border-slate-600"
+              }`}
             >
+              <option value="">Select a role</option>
               <option value="Member">Member</option>
               <option value="Admin">Admin</option>
               <option value="Moderator">Moderator</option>
             </select>
+            {errors.role && (
+              <p className="mt-1 text-sm text-red-500">{errors.role}</p>
+            )}
           </div>
 
           <div className="flex space-x-3 pt-4">
